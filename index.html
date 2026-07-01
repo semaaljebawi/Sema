@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Memories Forever</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #fce4ec, #f8bbd0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .room {
+            max-width: 1100px;
+            width: 100%;
+            background: #fff5f7;
+            border-radius: 80px 80px 40px 40px;
+            padding: 30px 30px 50px;
+            box-shadow: 0 30px 60px rgba(200, 80, 120, 0.3);
+            border: 4px solid #fce4ec;
+            position: relative;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .title h1 {
+            font-family: 'Georgia', serif;
+            font-size: 3.5rem;
+            color: #7a2a4a;
+            text-shadow: 6px 6px 0 #f8bbd0, 0 0 20px rgba(255, 182, 193, 0.4);
+            letter-spacing: 4px;
+        }
+        .title p {
+            font-size: 1.2rem;
+            color: #a0345e;
+            font-style: italic;
+            background: #fce4ec;
+            display: inline-block;
+            padding: 5px 30px;
+            border-radius: 50px;
+            margin-top: 5px;
+        }
+
+        /* ===== الطاولة ===== */
+        .table-wrapper {
+            position: relative;
+            margin: 30px 0 20px;
+        }
+
+        .table-cloth {
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            border-radius: 60px 60px 20px 20px;
+            padding: 30px 25px 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), inset 0 -10px 30px rgba(200,80,120,0.1);
+            border: 2px solid #fce4ec;
+            position: relative;
+        }
+
+        .table-wood {
+            background: #d9b382;
+            height: 12px;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -4px 0 #c49a6a, 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: -10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .table-wood::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+
+        .table-legs {
+            display: flex;
+            justify-content: space-around;
+            padding: 0 40px;
+            margin-top: -4px;
+        }
+        .table-legs div {
+            width: 22px;
+            height: 65px;
+            background: linear-gradient(180deg, #b58b5e, #8a6b45);
+            border-radius: 0 0 12px 12px;
+            box-shadow: inset -4px 0 0 #7a5d3a, inset 4px 0 0 #c9a070;
+        }
+
+        /* ===== محتويات الطاولة ===== */
+        .table-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 15px 5px;
+            margin-top: -30px;
+            position: relative;
+            z-index: 5;
+            gap: 20px;
+            min-height: 280px;
+        }
+
+        /* ===== الأوراق ===== */
+        .papers-stack {
+            flex: 2 1 300px;
+            position: relative;
+            min-height: 230px;
+            padding: 10px;
+        }
+
+        .paper {
+            position: absolute;
+            width: 170px;
+            height: 210px;
+            background: #fffdf5;
+            border-radius: 4px 16px 4px 16px;
+            border: 2px solid #f8bbd0;
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: 0.3s ease;
+            background-image: 
+                linear-gradient(0deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px),
+                linear-gradient(90deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px);
+            background-size: 30px 30px;
+        }
+
+        .paper:nth-child(1) { top: 5px; left: 5px; transform: rotate(-8deg); z-index: 1; background-color: #fff8f0; }
+        .paper:nth-child(2) { top: 18px; left: 28px; transform: rotate(6deg); z-index: 2; background-color: #fffdf5; }
+        .paper:nth-child(3) { top: 8px; left: 52px; transform: rotate(-4deg); z-index: 3; background-color: #fffaf2; }
+        .paper:nth-child(4) { top: 22px; left: 15px; transform: rotate(10deg); z-index: 4; background-color: #fffcf6; }
+        .paper:nth-child(5) { top: 2px; left: 40px; transform: rotate(-7deg); z-index: 5; background-color: #fff9f0; border-color: #f598b2; }
+
+        .paper:hover {
+            transform: scale(1.08) rotate(0deg) !important;
+            z-index: 10 !important;
+            box-shadow: 0 10px 35px rgba(200, 80, 120, 0.3);
+            border-color: #f56b8f;
+        }
+
+        /* ===== الأقلام (أقرب للورق وأكبر) ===== */
+        .pens-container {
+            position: absolute;
+            bottom: 8px;
+            right: -5px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .pen {
+            width: 8px;
+            height: 50px;
+            border-radius: 2px 2px 8px 8px;
+            transform: rotate(var(--rot, 0deg));
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: 0.2s ease;
+        }
+
+        .pen:hover { transform: rotate(0deg) scale(1.15) !important; }
+
+        .pen::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 9px;
+            height: 8px;
+            background: #444;
+            border-radius: 3px 3px 2px 2px;
+        }
+
+        .pen::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 6px;
+            border-radius: 50% 50% 30% 30%;
+            background: #444;
+        }
+
+        .pen-1 { --rot: -18deg; height: 52px; background: linear-gradient(180deg, #ff6b6b, #e85555); }
+        .pen-2 { --rot: 12deg; height: 45px; background: linear-gradient(180deg, #4ecdc4, #3ab0a8); }
+        .pen-3 { --rot: -8deg; height: 48px; background: linear-gradient(180deg, #ffe66d, #f0c800); }
+        .pen-4 { --rot: 20deg; height: 44px; background: linear-gradient(180deg, #a29bfe, #7c6fe0); }
+
+        /* ===== الصندوق ===== */
+        .box-area {
+            flex: 1 1 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .box {
+            width: 200px;
+            height: 230px;
+            background: linear-gradient(160deg, #e8c8a0, #d4b080);
+            border-radius: 8px 8px 4px 4px;
+            border: 6px solid #b8956a;
+            padding: 18px;
+            box-shadow: 
+                0 12px 0 #a07850,
+                0 20px 40px rgba(0,0,0,0.15),
+                inset 0 -10px 30px rgba(0,0,0,0.05);
+            overflow-y: auto;
+            position: relative;
+            background-image: 
+                repeating-linear-gradient(0deg, rgba(200,170,130,0.1) 0px, rgba(200,170,130,0.1) 2px, transparent 2px, transparent 4px),
+                repeating-linear-gradient(90deg, rgba(200,170,130,0.1) 0px, rgba(200,170,130,0.1) 2px, transparent 2px, transparent 4px);
+        }
+
+        .box::-webkit-scrollbar { width: 5px; }
+        .box::-webkit-scrollbar-thumb { background: #b8956a; border-radius: 20px; }
+
+        .box-lock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 20px;
+            border: 4px solid #8a6b45;
+            border-radius: 4px 4px 0 0;
+            border-bottom: none;
+            background: #c9a070;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .box-lock::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            border: 3px solid #8a6b45;
+            border-radius: 50%;
+            background: #c9a070;
+        }
+
+        .box-slot {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 6px;
+            background: #a07850;
+            border-radius: 4px;
+            opacity: 0.2;
+            pointer-events: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ===== الورقة المطوية (مربع صغير عشوائي) ===== */
+        .folded-paper {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: #fffdf5;
+            border-radius: 3px 8px 3px 8px;
+            border: 1.5px solid #d4b080;
+            box-shadow: 2px 3px 0 rgba(160,120,80,0.1);
+            margin: 3px 4px;
+            position: relative;
+            background-image: 
+                linear-gradient(0deg, transparent 12px, #fce4ec 13px, #fce4ec 14px, transparent 15px),
+                linear-gradient(90deg, transparent 12px, #fce4ec 13px, #fce4ec 14px, transparent 15px);
+            background-size: 16px 16px;
+            transform: rotate(var(--rot, 0deg));
+            animation: float 3s ease-in-out infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .folded-paper:nth-child(odd) { --rot: 12deg; }
+        .folded-paper:nth-child(even) { --rot: -8deg; }
+        .folded-paper:nth-child(3n) { --rot: 20deg; }
+        .folded-paper:nth-child(5n) { --rot: -15deg; }
+
+        @keyframes float {
+            0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(0); }
+            50% { transform: rotate(var(--rot, 0deg)) translateY(-3px); }
+        }
+
+        .empty-box {
+            color: #8a6b45;
+            text-align: center;
+            padding: 30px 0;
+            font-size: 0.9rem;
+            opacity: 0.3;
+        }
+
+        /* ===== المفتاح ===== */
+        .key-on-floor {
+            display: flex;
+            justify-content: flex-start;
+            padding-left: 40px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .key {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #ffd93d, #e8b800);
+            box-shadow: 
+                0 8px 0 #b38f2a,
+                0 12px 35px rgba(0,0,0,0.12),
+                inset 0 -5px 15px rgba(0,0,0,0.05),
+                inset 0 5px 20px rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: 0.2s ease;
+            border: 3px solid #ffec8a;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key::before {
+            content: '🔑';
+            font-size: 2rem;
+            opacity: 0.6;
+        }
+
+        .key::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 18px;
+            background: linear-gradient(180deg, #d4b830, #b38f2a);
+            border-radius: 0 0 3px 3px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .key:hover {
+            transform: translateY(-6px) scale(1.04);
+            box-shadow: 0 14px 0 #b38f2a, 0 18px 45px rgba(0,0,0,0.2);
+        }
+
+        .key:active {
+            transform: translateY(8px);
+            box-shadow: 0 4px 0 #b38f2a;
+        }
+
+        /* ===== مودال الورقة ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(200, 80, 120, 0.4);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-paper {
+            background: #fffdf7;
+            padding: 35px 35px 25px;
+            width: 90%;
+            max-width: 420px;
+            border-radius: 8px 35px 8px 35px;
+            box-shadow: 0 30px 70px rgba(120, 40, 60, 0.5);
+            border: 4px solid #f8bbd0;
+            animation: pop 0.4s ease;
+            background-image: 
+                linear-gradient(0deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px),
+                linear-gradient(90deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px);
+            background-size: 30px 30px;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.6) rotate(-8deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .modal-paper h2 {
+            font-family: 'Georgia', serif;
+            color: #7a2a4a;
+            font-size: 1.6rem;
+            text-align: center;
+            border-bottom: 2px dashed #f8bbd0;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .modal-paper label {
+            font-weight: bold;
+            color: #a0345e;
+            display: block;
+            margin-top: 8px;
+            font-size: 1rem;
+        }
+
+        .modal-paper input,
+        .modal-paper textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #f8bbd0;
+            border-radius: 14px;
+            font-size: 1rem;
+            margin-top: 3px;
+            background: #fffafc;
+            font-family: 'Georgia', serif;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .modal-paper input:focus,
+        .modal-paper textarea:focus {
+            border-color: #f56b8f;
+            box-shadow: 0 0 0 6px #fce4ec;
+        }
+
+        .modal-paper textarea {
+            height: 110px;
+            resize: vertical;
+        }
+
+        .modal-paper .put-in-box {
+            text-align: center;
+            margin: 15px 0 10px;
+            font-style: italic;
+            color: #b34b6b;
+            font-size: 1rem;
+            background: #fce4ec;
+            padding: 5px;
+            border-radius: 40px;
+            letter-spacing: 1px;
+            font-family: 'Georgia', serif;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-put {
+            background: #f56b8f;
+            color: white;
+            box-shadow: 0 5px 0 #a0345e;
+        }
+        .btn-put:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #a0345e; }
+
+        .btn-cancel {
+            background: #e0c4cc;
+            color: #5a2a3a;
+            box-shadow: 0 5px 0 #b18a96;
+        }
+        .btn-cancel:hover { transform: translateY(-3px); }
+
+        /* ===== مودال المفتاح ===== */
+        .key-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(100, 30, 50, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .key-modal-content {
+            background: #fff5f8;
+            padding: 35px;
+            border-radius: 60px 20px 60px 20px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            border: 5px solid #f5d742;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            animation: pop 0.3s ease;
+        }
+
+        .key-modal-content h2 {
+            color: #7a2a4a;
+            font-size: 1.8rem;
+            font-family: 'Georgia', serif;
+        }
+
+        .key-modal-content p {
+            color: #7a2a4a;
+            font-style: italic;
+        }
+
+        .key-modal-content input {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid #f8bbd0;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            margin: 15px 0;
+            text-align: center;
+            outline: none;
+            font-family: 'Georgia', serif;
+        }
+
+        .key-modal-content input:focus {
+            border-color: #f5d742;
+            box-shadow: 0 0 0 6px #fce4ec;
+        }
+
+        .key-modal-content button {
+            padding: 10px 35px;
+            border: none;
+            border-radius: 50px;
+            background: #f5d742;
+            color: #5a3e0e;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b38f2a;
+            transition: 0.2s;
+            font-family: 'Georgia', serif;
+        }
+
+        .key-modal-content button:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #b38f2a; }
+        .key-modal-content .close-key { 
+            background: #e0c4cc; 
+            box-shadow: 0 5px 0 #b18a96;
+            margin-left: 10px;
+        }
+
+        /* ===== عرض كل الرسائل ===== */
+        .all-messages-container {
+            display: none;
+            margin-top: 20px;
+            background: #fff0f5;
+            padding: 20px;
+            border-radius: 40px;
+            border: 4px solid #f5d742;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .all-messages-container .msg {
+            background: white;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 16px;
+            border-right: 10px solid #f56b8f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .all-messages-container .msg strong { color: #a0345e; }
+        .all-messages-container .msg .date { font-size: 0.7rem; color: #b34b6b; opacity: 0.7; }
+
+        @media (max-width: 750px) {
+            .title h1 { font-size: 2.5rem; }
+            .table-content { flex-direction: column-reverse; align-items: center; }
+            .box-area { width: 100%; max-width: 280px; }
+            .box { width: 100%; height: 200px; }
+            .papers-stack { min-height: 200px; }
+            .paper { width: 130px; height: 170px; }
+            .paper:nth-child(1) { top: 5px; left: 5px; }
+            .paper:nth-child(2) { top: 12px; left: 20px; }
+            .paper:nth-child(3) { top: 5px; left: 40px; }
+            .paper:nth-child(4) { top: 15px; left: 10px; }
+            .paper:nth-child(5) { top: 2px; left: 30px; }
+            .key-on-floor { padding-left: 20px; }
+            .key { width: 60px; height: 60px; }
+            .key::after { width: 8px; height: 14px; bottom: -10px; }
+            .pens-container { right: 0px; }
+            .pen { height: 38px; width: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="room">
+
+    <div class="title">
+        <h1>✨ Memories Forever ✨</h1>
+        <p>💝 leave your memory in the box</p>
+    </div>
+
+    <!-- ===== الطاولة ===== -->
+    <div class="table-wrapper">
+        <div class="table-cloth">
+            <div class="table-wood"></div>
+            
+            <div class="table-content">
+
+                <!-- الأوراق -->
+                <div class="papers-stack">
+                    <div class="paper" onclick="openPaperModal()"></div>
+                    <div class="paper" onclick="openPaperModal()"></div>
+                    <div class="paper" onclick="openPaperModal()"></div>
+                    <div class="paper" onclick="openPaperModal()"></div>
+                    <div class="paper" onclick="openPaperModal()"></div>
+                    
+                    <!-- الأقلام -->
+                    <div class="pens-container">
+                        <div class="pen pen-1"></div>
+                        <div class="pen pen-2"></div>
+                        <div class="pen pen-3"></div>
+                        <div class="pen pen-4"></div>
+                    </div>
+                </div>
+
+                <!-- الصندوق -->
+                <div class="box-area">
+                    <div class="box" id="boxMessages">
+                        <div class="box-slot"></div>
+                        <div class="box-lock"></div>
+                        <div id="boxContent"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="table-legs">
+            <div></div><div></div><div></div><div></div>
+        </div>
+    </div>
+
+    <!-- ===== المفتاح ===== -->
+    <div class="key-on-floor">
+        <div class="key" onclick="openKeyModal()"></div>
+    </div>
+
+    <!-- ===== عرض كل الرسائل ===== -->
+    <div id="allMessagesContainer" class="all-messages-container"></div>
+
+</div>
+
+<!-- ===== مودال الورقة ===== -->
+<div class="modal" id="paperModal">
+    <div class="modal-paper">
+        <h2>📄</h2>
+
+        <label>✏️</label>
+        <input type="text" id="guestName" placeholder="Your name..." />
+
+        <label>💭</label>
+        <textarea id="messageText" placeholder="Write your memory..."></textarea>
+
+        <div class="put-in-box">📬 put the paper in the box</div>
+
+        <div class="modal-buttons">
+            <button class="btn-put" onclick="saveMessage()">📩 Put</button>
+            <button class="btn-cancel" onclick="closePaperModal()">✖</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== مودال المفتاح ===== -->
+<div class="key-modal" id="keyModal">
+    <div class="key-modal-content">
+        <h2>🔑</h2>
+        <p>Enter the secret password</p>
+        <input type="password" id="secretPassword" placeholder="password..." />
+        <div>
+            <button onclick="checkPassword()">🔓 Open</button>
+            <button class="close-key" onclick="closeKeyModal()">✖</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SECRET_PASSWORD = "happy2026";
+
+    function getMessages() {
+        const data = localStorage.getItem('memoriesForever');
+        return data ? JSON.parse(data) : [];
+    }
+
+    function setMessages(messages) {
+        localStorage.setItem('memoriesForever', JSON.stringify(messages));
+    }
+
+    function renderBox() {
+        const messages = getMessages();
+        const boxContent = document.getElementById('boxContent');
+        if (messages.length === 0) {
+            boxContent.innerHTML = '<div class="empty-box">📭</div>';
+        } else {
+            // ورق مطوي مربع صغير بشكل عشوائي
+            let html = '';
+            messages.forEach((msg, index) => {
+                const rot = (Math.random() * 30 - 15).toFixed(0);
+                const delay = (Math.random() * 2).toFixed(1);
+                html += `<div class="folded-paper" style="--rot:${rot}deg; --delay:${delay}s;"></div>`;
+            });
+            boxContent.innerHTML = html;
+        }
+        const box = document.getElementById('boxMessages');
+        if (box) box.scrollTop = box.scrollHeight;
+    }
+
+    function openPaperModal() {
+        document.getElementById('paperModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('guestName').focus(), 100);
+    }
+
+    function closePaperModal() {
+        document.getElementById('paperModal').style.display = 'none';
+        document.getElementById('guestName').value = '';
+        document.getElementById('messageText').value = '';
+    }
+
+    function saveMessage() {
+        const name = document.getElementById('guestName').value.trim();
+        const text = document.getElementById('messageText').value.trim();
+
+        if (!name) {
+            alert('✏️ Please write your name first!');
+            document.getElementById('guestName').focus();
+            return;
+        }
+        if (!text) {
+            alert('✏️ Please write your memory!');
+            document.getElementById('messageText').focus();
+            return;
+        }
+
+        const messages = getMessages();
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US') + ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+        messages.push({ name, text, date: dateStr });
+        setMessages(messages);
+        renderBox();
+        closePaperModal();
+    }
+
+    function openKeyModal() {
+        document.getElementById('keyModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('secretPassword').focus(), 100);
+    }
+
+    function closeKeyModal() {
+        document.getElementById('keyModal').style.display = 'none';
+    }
+
+    function checkPassword() {
+        const input = document.getElementById('secretPassword').value.trim();
+        if (input === SECRET_PASSWORD) {
+            closeKeyModal();
+            showAllMessages();
+        } else {
+            alert('🔐 Wrong password! Try again.');
+            document.getElementById('secretPassword').value = '';
+            document.getElementById('secretPassword').focus();
+        }
+    }
+
+    function showAllMessages() {
+        const container = document.getElementById('allMessagesContainer');
+        const messages = getMessages();
+
+        if (messages.length === 0) {
+            container.innerHTML = `<div class="msg" style="text-align:center;">📭 No memories yet... the box is empty 💤</div>`;
+            container.style.display = 'block';
+            return;
+        }
+
+        container.innerHTML = messages.map((msg, i) => `
+            <div class="msg">
+                <strong>👑 ${msg.name}</strong> 
+                <span>${msg.text}</span>
+                <div class="date">${msg.date}</div>
+            </div>
+        `).join('');
+
+        container.style.display = container.style.display === 'none' || container.style.display === '' ? 'block' : 'none';
+    }
+
+    window.onload = function() {
+        renderBox();
+    };
+
+    window.onclick = function(e) {
+        if (e.target === document.getElementById('paperModal')) closePaperModal();
+        if (e.target === document.getElementById('keyModal')) closeKeyModal();
+    };
+</script>
+
+</body>
+</html>
