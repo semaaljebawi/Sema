@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Memories Forever</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js">
+    </script>
+
     <style>
         * {
             margin: 0;
@@ -64,7 +70,7 @@
             background: linear-gradient(135deg, #fce4ec, #f8bbd0);
             border-radius: 60px 60px 20px 20px;
             padding: 30px 25px 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15), inset 0 -10px 30px rgba(200,80,120,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), inset 0 -10px 30px rgba(200, 80, 120, 0.1);
             border: 2px solid #fce4ec;
             position: relative;
         }
@@ -73,7 +79,7 @@
             background: #d9b382;
             height: 12px;
             border-radius: 30px 30px 0 0;
-            box-shadow: 0 -4px 0 #c49a6a, 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 0 #c49a6a, 0 4px 15px rgba(0, 0, 0, 0.1);
             margin-top: -10px;
             position: relative;
             z-index: 2;
@@ -86,7 +92,7 @@
             left: 10%;
             width: 80%;
             height: 2px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
         }
 
@@ -133,20 +139,51 @@
             background: #fffdf5;
             border-radius: 4px 16px 4px 16px;
             border: 2px solid #f8bbd0;
-            box-shadow: 2px 4px 15px rgba(0,0,0,0.08);
+            box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.08);
             cursor: pointer;
             transition: 0.3s ease;
-            background-image: 
+            background-image:
                 linear-gradient(0deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px),
                 linear-gradient(90deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px);
             background-size: 30px 30px;
         }
 
-        .paper:nth-child(1) { top: 5px; left: 5px; transform: rotate(-8deg); z-index: 1; background-color: #fff8f0; }
-        .paper:nth-child(2) { top: 18px; left: 28px; transform: rotate(6deg); z-index: 2; background-color: #fffdf5; }
-        .paper:nth-child(3) { top: 8px; left: 52px; transform: rotate(-4deg); z-index: 3; background-color: #fffaf2; }
-        .paper:nth-child(4) { top: 22px; left: 15px; transform: rotate(10deg); z-index: 4; background-color: #fffcf6; }
-        .paper:nth-child(5) { top: 2px; left: 40px; transform: rotate(-7deg); z-index: 5; background-color: #fff9f0; border-color: #f598b2; }
+        .paper:nth-child(1) {
+            top: 5px;
+            left: 5px;
+            transform: rotate(-8deg);
+            z-index: 1;
+            background-color: #fff8f0;
+        }
+        .paper:nth-child(2) {
+            top: 18px;
+            left: 28px;
+            transform: rotate(6deg);
+            z-index: 2;
+            background-color: #fffdf5;
+        }
+        .paper:nth-child(3) {
+            top: 8px;
+            left: 52px;
+            transform: rotate(-4deg);
+            z-index: 3;
+            background-color: #fffaf2;
+        }
+        .paper:nth-child(4) {
+            top: 22px;
+            left: 15px;
+            transform: rotate(10deg);
+            z-index: 4;
+            background-color: #fffcf6;
+        }
+        .paper:nth-child(5) {
+            top: 2px;
+            left: 40px;
+            transform: rotate(-7deg);
+            z-index: 5;
+            background-color: #fff9f0;
+            border-color: #f598b2;
+        }
 
         .paper:hover {
             transform: scale(1.08) rotate(0deg) !important;
@@ -155,7 +192,7 @@
             border-color: #f56b8f;
         }
 
-        /* ===== الأقلام (أقرب للورق وأكبر) ===== */
+        /* ===== الأقلام ===== */
         .pens-container {
             position: absolute;
             bottom: 8px;
@@ -171,11 +208,13 @@
             border-radius: 2px 2px 8px 8px;
             transform: rotate(var(--rot, 0deg));
             position: relative;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             transition: 0.2s ease;
         }
 
-        .pen:hover { transform: rotate(0deg) scale(1.15) !important; }
+        .pen:hover {
+            transform: rotate(0deg) scale(1.15) !important;
+        }
 
         .pen::before {
             content: '';
@@ -201,10 +240,26 @@
             background: #444;
         }
 
-        .pen-1 { --rot: -18deg; height: 52px; background: linear-gradient(180deg, #ff6b6b, #e85555); }
-        .pen-2 { --rot: 12deg; height: 45px; background: linear-gradient(180deg, #4ecdc4, #3ab0a8); }
-        .pen-3 { --rot: -8deg; height: 48px; background: linear-gradient(180deg, #ffe66d, #f0c800); }
-        .pen-4 { --rot: 20deg; height: 44px; background: linear-gradient(180deg, #a29bfe, #7c6fe0); }
+        .pen-1 {
+            --rot: -18deg;
+            height: 52px;
+            background: linear-gradient(180deg, #ff6b6b, #e85555);
+        }
+        .pen-2 {
+            --rot: 12deg;
+            height: 45px;
+            background: linear-gradient(180deg, #4ecdc4, #3ab0a8);
+        }
+        .pen-3 {
+            --rot: -8deg;
+            height: 48px;
+            background: linear-gradient(180deg, #ffe66d, #f0c800);
+        }
+        .pen-4 {
+            --rot: 20deg;
+            height: 44px;
+            background: linear-gradient(180deg, #a29bfe, #7c6fe0);
+        }
 
         /* ===== الصندوق ===== */
         .box-area {
@@ -222,19 +277,24 @@
             border-radius: 8px 8px 4px 4px;
             border: 6px solid #b8956a;
             padding: 18px;
-            box-shadow: 
+            box-shadow:
                 0 12px 0 #a07850,
-                0 20px 40px rgba(0,0,0,0.15),
-                inset 0 -10px 30px rgba(0,0,0,0.05);
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                inset 0 -10px 30px rgba(0, 0, 0, 0.05);
             overflow-y: auto;
             position: relative;
-            background-image: 
-                repeating-linear-gradient(0deg, rgba(200,170,130,0.1) 0px, rgba(200,170,130,0.1) 2px, transparent 2px, transparent 4px),
-                repeating-linear-gradient(90deg, rgba(200,170,130,0.1) 0px, rgba(200,170,130,0.1) 2px, transparent 2px, transparent 4px);
+            background-image:
+                repeating-linear-gradient(0deg, rgba(200, 170, 130, 0.1) 0px, rgba(200, 170, 130, 0.1) 2px, transparent 2px, transparent 4px),
+                repeating-linear-gradient(90deg, rgba(200, 170, 130, 0.1) 0px, rgba(200, 170, 130, 0.1) 2px, transparent 2px, transparent 4px);
         }
 
-        .box::-webkit-scrollbar { width: 5px; }
-        .box::-webkit-scrollbar-thumb { background: #b8956a; border-radius: 20px; }
+        .box::-webkit-scrollbar {
+            width: 5px;
+        }
+        .box::-webkit-scrollbar-thumb {
+            background: #b8956a;
+            border-radius: 20px;
+        }
 
         .box-lock {
             position: absolute;
@@ -275,10 +335,10 @@
             border-radius: 4px;
             opacity: 0.2;
             pointer-events: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* ===== الورقة المطوية (مربع صغير عشوائي) ===== */
+        /* ===== الورقة المطوية ===== */
         .folded-paper {
             display: inline-block;
             width: 28px;
@@ -286,10 +346,10 @@
             background: #fffdf5;
             border-radius: 3px 8px 3px 8px;
             border: 1.5px solid #d4b080;
-            box-shadow: 2px 3px 0 rgba(160,120,80,0.1);
+            box-shadow: 2px 3px 0 rgba(160, 120, 80, 0.1);
             margin: 3px 4px;
             position: relative;
-            background-image: 
+            background-image:
                 linear-gradient(0deg, transparent 12px, #fce4ec 13px, #fce4ec 14px, transparent 15px),
                 linear-gradient(90deg, transparent 12px, #fce4ec 13px, #fce4ec 14px, transparent 15px);
             background-size: 16px 16px;
@@ -298,14 +358,27 @@
             animation-delay: var(--delay, 0s);
         }
 
-        .folded-paper:nth-child(odd) { --rot: 12deg; }
-        .folded-paper:nth-child(even) { --rot: -8deg; }
-        .folded-paper:nth-child(3n) { --rot: 20deg; }
-        .folded-paper:nth-child(5n) { --rot: -15deg; }
+        .folded-paper:nth-child(odd) {
+            --rot: 12deg;
+        }
+        .folded-paper:nth-child(even) {
+            --rot: -8deg;
+        }
+        .folded-paper:nth-child(3n) {
+            --rot: 20deg;
+        }
+        .folded-paper:nth-child(5n) {
+            --rot: -15deg;
+        }
 
         @keyframes float {
-            0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(0); }
-            50% { transform: rotate(var(--rot, 0deg)) translateY(-3px); }
+            0%,
+            100% {
+                transform: rotate(var(--rot, 0deg)) translateY(0);
+            }
+            50% {
+                transform: rotate(var(--rot, 0deg)) translateY(-3px);
+            }
         }
 
         .empty-box {
@@ -331,11 +404,11 @@
             height: 70px;
             border-radius: 50%;
             background: radial-gradient(circle at 35% 30%, #ffd93d, #e8b800);
-            box-shadow: 
+            box-shadow:
                 0 8px 0 #b38f2a,
-                0 12px 35px rgba(0,0,0,0.12),
-                inset 0 -5px 15px rgba(0,0,0,0.05),
-                inset 0 5px 20px rgba(255,255,255,0.3);
+                0 12px 35px rgba(0, 0, 0, 0.12),
+                inset 0 -5px 15px rgba(0, 0, 0, 0.05),
+                inset 0 5px 20px rgba(255, 255, 255, 0.3);
             cursor: pointer;
             transition: 0.2s ease;
             border: 3px solid #ffec8a;
@@ -361,12 +434,12 @@
             height: 18px;
             background: linear-gradient(180deg, #d4b830, #b38f2a);
             border-radius: 0 0 3px 3px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .key:hover {
             transform: translateY(-6px) scale(1.04);
-            box-shadow: 0 14px 0 #b38f2a, 0 18px 45px rgba(0,0,0,0.2);
+            box-shadow: 0 14px 0 #b38f2a, 0 18px 45px rgba(0, 0, 0, 0.2);
         }
 
         .key:active {
@@ -378,8 +451,10 @@
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(200, 80, 120, 0.4);
             backdrop-filter: blur(6px);
             justify-content: center;
@@ -396,15 +471,21 @@
             box-shadow: 0 30px 70px rgba(120, 40, 60, 0.5);
             border: 4px solid #f8bbd0;
             animation: pop 0.4s ease;
-            background-image: 
+            background-image:
                 linear-gradient(0deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px),
                 linear-gradient(90deg, transparent 23px, #fce4ec 24px, #fce4ec 25px, transparent 26px);
             background-size: 30px 30px;
         }
 
         @keyframes pop {
-            0% { transform: scale(0.6) rotate(-8deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            0% {
+                transform: scale(0.6) rotate(-8deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
 
         .modal-paper h2 {
@@ -487,21 +568,28 @@
             color: white;
             box-shadow: 0 5px 0 #a0345e;
         }
-        .btn-put:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #a0345e; }
+        .btn-put:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #a0345e;
+        }
 
         .btn-cancel {
             background: #e0c4cc;
             color: #5a2a3a;
             box-shadow: 0 5px 0 #b18a96;
         }
-        .btn-cancel:hover { transform: translateY(-3px); }
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+        }
 
         /* ===== مودال المفتاح ===== */
         .key-modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(100, 30, 50, 0.5);
             backdrop-filter: blur(4px);
             justify-content: center;
@@ -517,7 +605,7 @@
             width: 90%;
             text-align: center;
             border: 5px solid #f5d742;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             animation: pop 0.3s ease;
         }
 
@@ -563,9 +651,12 @@
             font-family: 'Georgia', serif;
         }
 
-        .key-modal-content button:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #b38f2a; }
-        .key-modal-content .close-key { 
-            background: #e0c4cc; 
+        .key-modal-content button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #b38f2a;
+        }
+        .key-modal-content .close-key {
+            background: #e0c4cc;
             box-shadow: 0 5px 0 #b18a96;
             margin-left: 10px;
         }
@@ -588,244 +679,322 @@
             margin: 8px 0;
             border-radius: 16px;
             border-right: 10px solid #f56b8f;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        .all-messages-container .msg strong { color: #a0345e; }
-        .all-messages-container .msg .date { font-size: 0.7rem; color: #b34b6b; opacity: 0.7; }
+        .all-messages-container .msg strong {
+            color: #a0345e;
+        }
+        .all-messages-container .msg .date {
+            font-size: 0.7rem;
+            color: #b34b6b;
+            opacity: 0.7;
+        }
 
         @media (max-width: 750px) {
-            .title h1 { font-size: 2.5rem; }
-            .table-content { flex-direction: column-reverse; align-items: center; }
-            .box-area { width: 100%; max-width: 280px; }
-            .box { width: 100%; height: 200px; }
-            .papers-stack { min-height: 200px; }
-            .paper { width: 130px; height: 170px; }
-            .paper:nth-child(1) { top: 5px; left: 5px; }
-            .paper:nth-child(2) { top: 12px; left: 20px; }
-            .paper:nth-child(3) { top: 5px; left: 40px; }
-            .paper:nth-child(4) { top: 15px; left: 10px; }
-            .paper:nth-child(5) { top: 2px; left: 30px; }
-            .key-on-floor { padding-left: 20px; }
-            .key { width: 60px; height: 60px; }
-            .key::after { width: 8px; height: 14px; bottom: -10px; }
-            .pens-container { right: 0px; }
-            .pen { height: 38px; width: 6px; }
+            .title h1 {
+                font-size: 2.5rem;
+            }
+            .table-content {
+                flex-direction: column-reverse;
+                align-items: center;
+            }
+            .box-area {
+                width: 100%;
+                max-width: 280px;
+            }
+            .box {
+                width: 100%;
+                height: 200px;
+            }
+            .papers-stack {
+                min-height: 200px;
+            }
+            .paper {
+                width: 130px;
+                height: 170px;
+            }
+            .paper:nth-child(1) {
+                top: 5px;
+                left: 5px;
+            }
+            .paper:nth-child(2) {
+                top: 12px;
+                left: 20px;
+            }
+            .paper:nth-child(3) {
+                top: 5px;
+                left: 40px;
+            }
+            .paper:nth-child(4) {
+                top: 15px;
+                left: 10px;
+            }
+            .paper:nth-child(5) {
+                top: 2px;
+                left: 30px;
+            }
+            .key-on-floor {
+                padding-left: 20px;
+            }
+            .key {
+                width: 60px;
+                height: 60px;
+            }
+            .key::after {
+                width: 8px;
+                height: 14px;
+                bottom: -10px;
+            }
+            .pens-container {
+                right: 0px;
+            }
+            .pen {
+                height: 38px;
+                width: 6px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="room">
+    <div class="room">
 
-    <div class="title">
-        <h1>✨ Memories Forever ✨</h1>
-        <p>💝 leave your memory in the box</p>
-    </div>
+        <div class="title">
+            <h1> Memories Forever </h1>
+            <p>  leave your memory in the box</p>
+        </div>
 
-    <!-- ===== الطاولة ===== -->
-    <div class="table-wrapper">
-        <div class="table-cloth">
-            <div class="table-wood"></div>
-            
-            <div class="table-content">
+        <!-- ===== الطاولة ===== -->
+        <div class="table-wrapper">
+            <div class="table-cloth">
+                <div class="table-wood"></div>
 
-                <!-- الأوراق -->
-                <div class="papers-stack">
-                    <div class="paper" onclick="openPaperModal()"></div>
-                    <div class="paper" onclick="openPaperModal()"></div>
-                    <div class="paper" onclick="openPaperModal()"></div>
-                    <div class="paper" onclick="openPaperModal()"></div>
-                    <div class="paper" onclick="openPaperModal()"></div>
-                    
-                    <!-- الأقلام -->
-                    <div class="pens-container">
-                        <div class="pen pen-1"></div>
-                        <div class="pen pen-2"></div>
-                        <div class="pen pen-3"></div>
-                        <div class="pen pen-4"></div>
+                <div class="table-content">
+
+                    <!-- الأوراق -->
+                    <div class="papers-stack">
+                        <div class="paper" onclick="openPaperModal()"></div>
+                        <div class="paper" onclick="openPaperModal()"></div>
+                        <div class="paper" onclick="openPaperModal()"></div>
+                        <div class="paper" onclick="openPaperModal()"></div>
+                        <div class="paper" onclick="openPaperModal()"></div>
+
+                        <!-- الأقلام -->
+                        <div class="pens-container">
+                            <div class="pen pen-1"></div>
+                            <div class="pen pen-2"></div>
+                            <div class="pen pen-3"></div>
+                            <div class="pen pen-4"></div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- الصندوق -->
-                <div class="box-area">
-                    <div class="box" id="boxMessages">
-                        <div class="box-slot"></div>
-                        <div class="box-lock"></div>
-                        <div id="boxContent"></div>
+                    <!-- الصندوق -->
+                    <div class="box-area">
+                        <div class="box" id="boxMessages">
+                            <div class="box-slot"></div>
+                            <div class="box-lock"></div>
+                            <div id="boxContent"></div>
+                        </div>
                     </div>
+
                 </div>
 
             </div>
 
+            <div class="table-legs">
+                <div></div><div></div><div></div><div></div>
+            </div>
         </div>
 
-        <div class="table-legs">
-            <div></div><div></div><div></div><div></div>
+        <!-- ===== المفتاح ===== -->
+        <div class="key-on-floor">
+            <div class="key" onclick="openKeyModal()"></div>
+        </div>
+
+        <!-- ===== عرض كل الرسائل ===== -->
+        <div id="allMessagesContainer" class="all-messages-container"></div>
+
+    </div>
+
+    <!-- ===== مودال الورقة ===== -->
+    <div class="modal" id="paperModal">
+        <div class="modal-paper">
+            <h2>📄</h2>
+
+            <label>✏️</label>
+            <input type="text" id="guestName" placeholder="Your name..." />
+
+            <label>💭</label>
+            <textarea id="messageText" placeholder="Write your memory..."></textarea>
+
+            <div class="put-in-box">📬 put the paper in the box</div>
+
+            <div class="modal-buttons">
+                <button class="btn-put" onclick="saveMessage()">📩 Put</button>
+                <button class="btn-cancel" onclick="closePaperModal()">✖</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== مودال المفتاح ===== -->
+    <div class="key-modal" id="keyModal">
+        <div class="key-modal-content">
+            <h2>🔑</h2>
+            <p>Enter the secret password</p>
+            <input type="password" id="secretPassword" placeholder="password..." />
+            <div>
+                <button onclick="checkPassword()">🔓 Open</button>
+                <button class="close-key" onclick="closeKeyModal()">✖</button>
+            </div>
         </div>
     </div>
 
-    <!-- ===== المفتاح ===== -->
-    <div class="key-on-floor">
-        <div class="key" onclick="openKeyModal()"></div>
-    </div>
+    <script>
+        // =============================================
+        // 🔥 هون حطي Config تبعك 🔥
+        // =============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBf9hbUwSjwFLMbop8fdgmMb27tHQBj_0k",
+            authDomain: "memory-29b51.firebaseapp.com",
+            databaseURL: "https://memory-29b51-default-rtdb.firebaseio.com",
+            projectId: "memory-29b51",
+            storageBucket: "memory-29b51.firebasestorage.app",
+            messagingSenderId: "477940614307",
+            appId: "1:477940614307:web:a598c786014d45ba372b16"
+        };
 
-    <!-- ===== عرض كل الرسائل ===== -->
-    <div id="allMessagesContainer" class="all-messages-container"></div>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-</div>
+        // =============================================
+        const SECRET_PASSWORD = "happy2026";
 
-<!-- ===== مودال الورقة ===== -->
-<div class="modal" id="paperModal">
-    <div class="modal-paper">
-        <h2>📄</h2>
+        // ===== حفظ رسالة جديدة في Firebase =====
+        function saveMessage() {
+            const name = document.getElementById('guestName').value.trim();
+            const text = document.getElementById('messageText').value.trim();
 
-        <label>✏️</label>
-        <input type="text" id="guestName" placeholder="Your name..." />
+            if (!name) {
+                alert('✏️ Please write your name first!');
+                document.getElementById('guestName').focus();
+                return;
+            }
+            if (!text) {
+                alert('✏️ Please write your memory!');
+                document.getElementById('messageText').focus();
+                return;
+            }
 
-        <label>💭</label>
-        <textarea id="messageText" placeholder="Write your memory..."></textarea>
-
-        <div class="put-in-box">📬 put the paper in the box</div>
-
-        <div class="modal-buttons">
-            <button class="btn-put" onclick="saveMessage()">📩 Put</button>
-            <button class="btn-cancel" onclick="closePaperModal()">✖</button>
-        </div>
-    </div>
-</div>
-
-<!-- ===== مودال المفتاح ===== -->
-<div class="key-modal" id="keyModal">
-    <div class="key-modal-content">
-        <h2>🔑</h2>
-        <p>Enter the secret password</p>
-        <input type="password" id="secretPassword" placeholder="password..." />
-        <div>
-            <button onclick="checkPassword()">🔓 Open</button>
-            <button class="close-key" onclick="closeKeyModal()">✖</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    const SECRET_PASSWORD = "happy2026";
-
-    function getMessages() {
-        const data = localStorage.getItem('memoriesForever');
-        return data ? JSON.parse(data) : [];
-    }
-
-    function setMessages(messages) {
-        localStorage.setItem('memoriesForever', JSON.stringify(messages));
-    }
-
-    function renderBox() {
-        const messages = getMessages();
-        const boxContent = document.getElementById('boxContent');
-        if (messages.length === 0) {
-            boxContent.innerHTML = '<div class="empty-box">📭</div>';
-        } else {
-            // ورق مطوي مربع صغير بشكل عشوائي
-            let html = '';
-            messages.forEach((msg, index) => {
-                const rot = (Math.random() * 30 - 15).toFixed(0);
-                const delay = (Math.random() * 2).toFixed(1);
-                html += `<div class="folded-paper" style="--rot:${rot}deg; --delay:${delay}s;"></div>`;
+            const messagesRef = database.ref('messages');
+            const newMessageRef = messagesRef.push();
+            newMessageRef.set({
+                name: name,
+                text: text,
+                date: new Date().toLocaleString()
+            }).then(() => {
+                closePaperModal();
+            }).catch((error) => {
+                alert('❌ Error saving message: ' + error.message);
             });
-            boxContent.innerHTML = html;
-        }
-        const box = document.getElementById('boxMessages');
-        if (box) box.scrollTop = box.scrollHeight;
-    }
-
-    function openPaperModal() {
-        document.getElementById('paperModal').style.display = 'flex';
-        setTimeout(() => document.getElementById('guestName').focus(), 100);
-    }
-
-    function closePaperModal() {
-        document.getElementById('paperModal').style.display = 'none';
-        document.getElementById('guestName').value = '';
-        document.getElementById('messageText').value = '';
-    }
-
-    function saveMessage() {
-        const name = document.getElementById('guestName').value.trim();
-        const text = document.getElementById('messageText').value.trim();
-
-        if (!name) {
-            alert('✏️ Please write your name first!');
-            document.getElementById('guestName').focus();
-            return;
-        }
-        if (!text) {
-            alert('✏️ Please write your memory!');
-            document.getElementById('messageText').focus();
-            return;
         }
 
-        const messages = getMessages();
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('en-US') + ' ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        // ===== قراءة الرسائل من Firebase (في الوقت الحقيقي) =====
+        function renderBox() {
+            const messagesRef = database.ref('messages');
+            messagesRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                const boxContent = document.getElementById('boxContent');
 
-        messages.push({ name, text, date: dateStr });
-        setMessages(messages);
-        renderBox();
-        closePaperModal();
-    }
+                if (!data) {
+                    boxContent.innerHTML = '<div class="empty-box">📭</div>';
+                    return;
+                }
 
-    function openKeyModal() {
-        document.getElementById('keyModal').style.display = 'flex';
-        setTimeout(() => document.getElementById('secretPassword').focus(), 100);
-    }
+                const messages = Object.values(data);
+                const recent = messages.slice(-15).reverse();
+                boxContent.innerHTML = recent.map(() => `
+                        <div class="folded-paper"></div>
+                    `).join('');
 
-    function closeKeyModal() {
-        document.getElementById('keyModal').style.display = 'none';
-    }
-
-    function checkPassword() {
-        const input = document.getElementById('secretPassword').value.trim();
-        if (input === SECRET_PASSWORD) {
-            closeKeyModal();
-            showAllMessages();
-        } else {
-            alert('🔐 Wrong password! Try again.');
-            document.getElementById('secretPassword').value = '';
-            document.getElementById('secretPassword').focus();
-        }
-    }
-
-    function showAllMessages() {
-        const container = document.getElementById('allMessagesContainer');
-        const messages = getMessages();
-
-        if (messages.length === 0) {
-            container.innerHTML = `<div class="msg" style="text-align:center;">📭 No memories yet... the box is empty 💤</div>`;
-            container.style.display = 'block';
-            return;
+                const box = document.getElementById('boxMessages');
+                if (box) box.scrollTop = box.scrollHeight;
+            });
         }
 
-        container.innerHTML = messages.map((msg, i) => `
-            <div class="msg">
-                <strong>👑 ${msg.name}</strong> 
-                <span>${msg.text}</span>
-                <div class="date">${msg.date}</div>
-            </div>
-        `).join('');
+        // ===== عرض كل الرسائل (بكلمة السر) =====
+        function showAllMessages() {
+            const messagesRef = database.ref('messages');
+            messagesRef.once('value', (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('allMessagesContainer');
 
-        container.style.display = container.style.display === 'none' || container.style.display === '' ? 'block' : 'none';
-    }
+                if (!data) {
+                    container.innerHTML =
+                        `<div class="msg" style="text-align:center;">📭 No memories yet... the box is empty 💤</div>`;
+                    container.style.display = 'block';
+                    return;
+                }
 
-    window.onload = function() {
-        renderBox();
-    };
+                const messages = Object.values(data);
+                container.innerHTML = messages.map((msg) => `
+                        <div class="msg">
+                            <strong>👑 ${msg.name || 'Anonymous'}</strong>
+                            <span>${msg.text}</span>
+                            <div class="date">${msg.date}</div>
+                        </div>
+                    `).join('');
 
-    window.onclick = function(e) {
-        if (e.target === document.getElementById('paperModal')) closePaperModal();
-        if (e.target === document.getElementById('keyModal')) closeKeyModal();
-    };
-</script>
+                container.style.display = container.style.display === 'none' || container.style.display === '' ? 'block' :
+                    'none';
+            });
+        }
+
+        // ===== دوال مساعدة =====
+        function openPaperModal() {
+            document.getElementById('paperModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('guestName').focus(), 100);
+        }
+
+        function closePaperModal() {
+            document.getElementById('paperModal').style.display = 'none';
+            document.getElementById('guestName').value = '';
+            document.getElementById('messageText').value = '';
+        }
+
+        function openKeyModal() {
+            document.getElementById('keyModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('secretPassword').focus(), 100);
+        }
+
+        function closeKeyModal() {
+            document.getElementById('keyModal').style.display = 'none';
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('secretPassword').value.trim();
+            if (input === SECRET_PASSWORD) {
+                closeKeyModal();
+                showAllMessages();
+            } else {
+                alert('🔐 Wrong password! Try again.');
+                document.getElementById('secretPassword').value = '';
+                document.getElementById('secretPassword').focus();
+            }
+        }
+
+        // ===== عند تحميل الصفحة =====
+        window.onload = function() {
+            renderBox();
+        };
+
+        // ===== إغلاق المودال بالضغط خارجها =====
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('paperModal')) closePaperModal();
+            if (e.target === document.getElementById('keyModal')) closeKeyModal();
+        };
+    </script>
 
 </body>
 </html>
